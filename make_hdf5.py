@@ -62,8 +62,10 @@ for phase in phases.keys(): #now for each of the phases, we'll loop through the 
     
     totals=np.zeros((2,len(classes))) # we can to keep counts of all the classes in for in particular training, since we 
     totals[0,:]=classes               # can later use this information to create better weights
-
-    hdf5_file = tables.open_file(f"./{dataname}_{phase}.pytable", mode='w') #open the respective pytable
+    
+	name_hdf5_file = "./{dataname}_{phase}.pytable"
+	
+    hdf5_file = tables.open_file(fname_hdf5_file, mode='w') #open the respective pytable
     storage["filename"] = hdf5_file.create_earray(hdf5_file.root, 'filename', filenameAtom, (0,)) #create the array for storage
     
     for imgtype in imgtypes: #for each of the image types, in this case mask and image, we need to create the associated earray
@@ -78,7 +80,9 @@ for phase in phases.keys(): #now for each of the phases, we'll loop through the 
         print(fname)
         for imgtype in imgtypes:
             if(imgtype=="img"): #if we're looking at an img, it must be 3 channel, but cv2 won't load it in the correct channel order, so we need to fix that
-                io=cv2.cvtColor(cv2.imread("./imgs/"+os.path.basename(fname).replace("_mask.png",".tif")),cv2.COLOR_BGR2RGB)
+                #io=cv2.cvtColor(cv2.imread("./imgs/"+os.path.basename(fname).replace("_mask.png",".tif")),cv2.COLOR_BGR2RGB)
+				# Put COLOR_BGR2HSV instead COLOR_BGR2RGB add little granurality, little 
+				io=cv2.cvtColor(cv2.imread("./imgs/"+os.path.basename(fname).replace("_mask.png",".tif")),cv2.COLOR_BGR2HSV)
                 interp_method=PIL.Image.BICUBIC
                 
             else: #if its a mask image, then we only need a single channel (since grayscale 3D images are equal in all channels)
